@@ -18,7 +18,7 @@ export function Navbar() {
     { name: 'Report Issue', path: '/report' },
     { name: 'My Reports', path: '/reports' },
     { name: 'Dashboard', path: '/dashboard' },
-    { name: 'Admin', path: '/admin' }
+    
   ];
 
   // Added logout handler
