@@ -91,7 +91,7 @@ export function ReportCard({ report, viewMode = 'full', onClick }: ReportCardPro
             <img
               src={report.photo || '/placeholder.svg'}
               alt={`${report.category} issue`}
-              className="w-20 h-20 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+              className="w-full h-full object-cover"
             />
             <div className="absolute top-2 left-2">
               {report.status && getStatusBadge(report.status)}
