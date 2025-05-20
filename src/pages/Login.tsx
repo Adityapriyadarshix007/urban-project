@@ -109,7 +109,7 @@ export default function Login() {
         <Lottie animationData={loginAnimation} loop style={{ width: 150, height: 150 }} />
 
         <h2 className="text-xl font-semibold mb-6 text-center mt-4 w-full text-gray-900">
-          Sign in with Google
+          Sign in with Firebase Auth
         </h2>
 
         <div id="google-button" ref={buttonDivRef} className="w-full flex justify-center"></div>
