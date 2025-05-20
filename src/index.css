@@ -1,0 +1,175 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 210 100% 97%; /* rgb(240 249 255) */
+    --foreground: 222 64% 11%;  /* rgb(15 23 42) */
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 64% 11%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 64% 11%;
+
+    --primary: 262 82% 58%; /* rgb(124 58 237) */
+    --primary-foreground: 0 0% 99%; /* rgb(252 252 252) */
+
+    --secondary: 241 78% 59%; /* rgb(79 70 229) */
+    --secondary-foreground: 0 0% 99%;
+
+    --muted: 210 20% 96%; /* rgb(241 245 249) */
+    --muted-foreground: 215 14% 47%; /* rgb(100 116 139) */
+
+    --accent: 194 90% 48%; /* rgb(14 165 233) */
+    --accent-foreground: 0 0% 99%;
+
+    --destructive: 0 83% 60%; /* rgb(239 68 68) */
+    --destructive-foreground: 0 0% 99%;
+
+    --border: 210 28% 91%; /* rgb(226 232 240) */
+    --input: 210 28% 91%;
+    --ring: 262 82% 58%;
+
+    --radius: 0.75rem;
+
+    --sidebar-background: 210 60% 98%;
+    --sidebar-foreground: 222 64% 11%;
+    --sidebar-primary: 262 82% 58%;
+    --sidebar-primary-foreground: 0 0% 99%;
+    --sidebar-accent: 210 33% 96%;
+    --sidebar-accent-foreground: 222 64% 11%;
+    --sidebar-border: 210 28% 91%;
+    --sidebar-ring: 262 82% 58%;
+  }
+
+  .dark {
+  --background: 215 80% 6%;     /* #050e1a */
+  --foreground: 210 60% 96%;    /* #f1f5f9 */
+
+  --card: 215 60% 12%;          /* #0c1b33 */
+  --card-foreground: 210 60% 96%;
+
+  --popover: 215 60% 12%;
+  --popover-foreground: 210 60% 96%;
+
+  --primary: 220 77% 50%;       /* #2563eb */
+  --primary-foreground: 210 60% 98%;
+
+  --secondary: 220 60% 40%;
+  --secondary-foreground: 210 60% 96%;
+
+  --muted: 215 30% 20%;
+  --muted-foreground: 215 18% 70%;
+
+  --accent: 220 77% 34%;        /* #1e3a8a */
+  --accent-foreground: 210 60% 96%;
+
+  --destructive: 0 91% 71%;
+  --destructive-foreground: 210 60% 96%;
+
+  --border: 215 30% 20%;
+  --input: 215 30% 20%;
+  --ring: 220 80% 60%;
+
+  --sidebar-background: 215 60% 12%;
+  --sidebar-foreground: 210 60% 96%;
+  --sidebar-primary: 220 80% 60%;
+  --sidebar-primary-foreground: 210 60% 96%;
+  --sidebar-accent: 215 30% 20%;
+  --sidebar-accent-foreground: 210 60% 96%;
+  --sidebar-border: 215 30% 20%;
+  --sidebar-ring: 220 80% 60%;
+}
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 0.75rem; /* ~12pt */
+    background: linear-gradient(to bottom, #ffffff, #f8fafc); /* soft white gradient */
+    @apply text-foreground transition-colors duration-300 dark:bg-none;
+  }
+
+  .dark body {
+    background: linear-gradient(to bottom, #0b1f40, #162d55); /* navy gradient for dark mode */
+  }
+
+  html {
+    @apply scroll-smooth;
+  }
+
+  h1, h2 {
+    font-family: 'Caveat', cursive;
+  }
+
+  h3, h4, h5, h6 {
+    @apply font-semibold;
+  }
+
+  h1 {
+    @apply text-3xl md:text-4xl lg:text-5xl;
+  }
+
+  h2 {
+    @apply text-2xl md:text-3xl lg:text-4xl;
+  }
+
+  h3 {
+    @apply text-xl md:text-2xl lg:text-3xl;
+  }
+}
+
+@layer components {
+  .urban-gradient {
+    @apply bg-gradient-to-r from-urban-primary to-urban-secondary;
+  }
+
+  .glass-card {
+    @apply bg-white/90 dark:bg-black/60 backdrop-blur-md border border-white/20 dark:border-white/10 shadow-lg;
+  }
+
+  .status-pending {
+    @apply bg-urban-warning/20 text-urban-warning border border-urban-warning/30;
+  }
+
+  .status-in-progress {
+    @apply bg-urban-info/20 text-urban-info border border-urban-info/30;
+  }
+
+  .status-fixed {
+    @apply bg-urban-success/20 text-urban-success border border-urban-success/30;
+  }
+
+  .font-handwritten {
+    font-family: 'Caveat', cursive;
+  }
+
+  .shining {
+  position: relative;
+  display: inline-block;
+  background: linear-gradient(90deg, #3b82f6, #60a5fa, #3b82f6);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 3s linear infinite;
+  font-weight: bold;
+  font-size: 2rem; /* optional size styling */
+  }
+
+  @keyframes shine {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+}
