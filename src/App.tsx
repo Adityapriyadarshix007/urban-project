@@ -20,7 +20,7 @@ import Report from "./pages/Report";
 import Reports from "./pages/Reports";
 import ReportDetail from "./pages/ReportDetail";
 import Dashboard from "./pages/Dashboard";
-import Admin from "./pages/Admin";
+
 import NotFound from "./pages/NotFound";
 import HelpCenter from "./pages/HelpCenter";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -101,14 +101,6 @@ const AppRoutes = () => {
           element={
             <ProtectedRoute>
               <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute>
-              <Admin />
             </ProtectedRoute>
           }
         />
