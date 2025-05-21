@@ -34,9 +34,21 @@ const Reports = () => {
           const data = doc.data();
           return {
             id: doc.id,
-            ...data,
-            timestamp: data.timestamp?.toDate?.() || null,
+            userId: data.userId || 'unknown',
+            userEmail: data.userEmail || 'unknown',
+            category: data.category || 'Waste',
+            location: {
+              lat: data.location?.lat || 0,
+              lng: data.location?.lng || 0,
+              address: data.location?.address || 'No address provided',
+            },
+            photo: data.photoUrl || data.photo || '',
+            status: data.status || 'Pending',
+            description: data.description || '',
+            address: data.address || '',
+            timestamp: data.timestamp?.toDate?.() || new Date(),
             updatedAt: data.updatedAt?.toDate?.() || null,
+            assignedTo: data.assignedTo || '',
           };
         }) as Report[];
 
