@@ -160,6 +160,7 @@ export function ReportForm() {
           address,
         },
         address,
+        status: 'Pending',
         timestamp: serverTimestamp(), // renamed to match ReportCard
       });
 
