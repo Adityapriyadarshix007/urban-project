@@ -1,9 +1,11 @@
+import { ReactNode } from "react";
 
 export type ReportStatus = 'Pending' | 'In Progress' | 'Fixed';
 
 export type ReportCategory = 'Waste' | 'Pothole' | 'Leak' | 'Streetlight';
 
 export interface Report {
+  address: ReactNode;
   id: string;
   userId: string;
   category: ReportCategory;
