@@ -4,41 +4,54 @@ import { ReportList } from '@/components/ReportList';
 import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { Report } from '@/types';
-import { collection, getDocs } from 'firebase/firestore';
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { db } from '@/firebaseConfig';
+import { getAuth } from 'firebase/auth';
 
 const Reports = () => {
   const [activeTab, setActiveTab] = useState<string>('all');
   const [allReports, setAllReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Fetch reports from Firestore
   useEffect(() => {
-    const fetchReports = async () => {
-      try {
-        const snapshot = await getDocs(collection(db, 'reports'));
-        const fetchedReports = snapshot.docs.map(doc => {
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+
+    if (!currentUser) {
+      console.warn('User not logged in');
+      setLoading(false);
+      return;
+    }
+
+    // Query reports where userId matches current user
+    const reportsRef = collection(db, 'reports');
+    const q = query(reportsRef, where('userId', '==', currentUser.uid));
+
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const userReports = snapshot.docs.map((doc) => {
           const data = doc.data();
           return {
             id: doc.id,
             ...data,
-            // Convert Firestore Timestamp to JS Date
             timestamp: data.timestamp?.toDate?.() || null,
             updatedAt: data.updatedAt?.toDate?.() || null,
           };
         }) as Report[];
-        setAllReports(fetchedReports);
-      } catch (error) {
-        console.error("Error fetching reports:", error);
-      } finally {
+
+        setAllReports(userReports);
+        setLoading(false);
+      },
+      (error) => {
+        console.error('Error fetching user reports:', error);
         setLoading(false);
       }
-    };
+    );
 
-    fetchReports();
+    return () => unsubscribe();
   }, []);
 
-  // Status-based filters (optional — will work only if status exists)
   const reports = {
     all: allReports,
     pending: allReports.filter(report => report.status === 'Pending'),
