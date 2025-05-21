@@ -14,6 +14,7 @@ import { Textarea } from './ui/textarea';
 import { db } from '@/firebaseConfig';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 import axios from 'axios';
+import { getAuth } from 'firebase/auth';
 
 export function ReportForm() {
   const [category, setCategory] = useState<ReportCategory>('Waste');
@@ -134,8 +135,22 @@ export function ReportForm() {
       return;
     }
 
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+
+    if (!currentUser) {
+      toast({
+        variant: 'destructive',
+        title: 'Authentication error',
+        description: 'You must be logged in to submit a report.',
+      });
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       await addDoc(collection(db, 'reports'), {
+        userId: currentUser.uid,
         category,
         description,
         photoUrl,
