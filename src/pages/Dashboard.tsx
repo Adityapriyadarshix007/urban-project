@@ -4,7 +4,18 @@ import { Footer } from '@/components/Footer';
 import { db } from '@/firebaseConfig';
 import { collection, getDocs } from 'firebase/firestore';
 import { Report } from '@/types';
-import { PieChart, Pie, Cell, Tooltip, BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
+import {
+  PieChart,
+  Pie,
+  Cell,
+  Tooltip,
+  ResponsiveContainer,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+} from 'recharts';
 import { Link } from 'react-router-dom';
 
 const Dashboard = () => {
@@ -12,16 +23,16 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
 
   const statusColors: { [key: string]: string } = {
-    Pending: '#facc15',       // yellow-400
-    'In Progress': '#3b82f6', // blue-500
-    Fixed: '#22c55e',         // green-500
+    Pending: '#f87171',       // red
+    'In Progress': '#facc15', // yellow
+    Fixed: '#22c55e',         // green
   };
 
   useEffect(() => {
     const fetchReports = async () => {
       try {
         const snapshot = await getDocs(collection(db, 'reports'));
-        const fetchedReports: Report[] = snapshot.docs.map(doc => {
+        const fetchedReports: Report[] = snapshot.docs.map((doc) => {
           const data = doc.data();
           return {
             id: doc.id,
@@ -61,12 +72,48 @@ const Dashboard = () => {
     {} as { [key: string]: number }
   );
 
-  const chartData = Object.keys(statusCounts).map(status => ({
+  const categoryCounts = reports.reduce(
+    (acc, report) => {
+      acc[report.category] = (acc[report.category] || 0) + 1;
+      return acc;
+    },
+    {} as { [key: string]: number }
+  );
+
+  const pieChartData = Object.keys(statusCounts).map((status) => ({
     name: status,
     value: statusCounts[status],
   }));
 
-  const totalReports = reports.length;
+  const barChartData = Object.entries(categoryCounts).map(([category, count]) => ({
+    category,
+    count,
+  }));
+
+  const renderLabel = ({ cx, cy, midAngle, outerRadius, percent, index }: any) => {
+  const RADIAN = Math.PI / 180;
+  const radius = outerRadius + 30;
+  const x = cx + radius * Math.cos(-midAngle * RADIAN);
+  const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+  return (
+    <text
+      x={x}
+      y={y}
+      fill="#ffffff" // bright white for contrast
+      textAnchor={x > cx ? 'start' : 'end'}
+      dominantBaseline="central"
+      fontSize={16}
+      fontWeight="bold"
+      style={{
+        textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
+      }}
+    >
+      {`${pieChartData[index].name} (${(percent * 100).toFixed(1)}%)`}
+    </text>
+  );
+};
+
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-900">
@@ -83,60 +130,70 @@ const Dashboard = () => {
           <p>Loading reports...</p>
         ) : (
           <>
-            {/* Stats Cards */}
+            {/* Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
               <div className="bg-white dark:bg-gray-800 shadow rounded-xl p-4">
                 <h2 className="text-gray-600 dark:text-gray-300">Total Reports</h2>
-                <p className="text-3xl font-bold">{totalReports}</p>
+                <p className="text-3xl font-bold">{reports.length}</p>
               </div>
-              <div className="bg-white dark:bg-gray-800 shadow rounded-xl p-4">
-                <h2 className="text-gray-600 dark:text-gray-300">Pending</h2>
-                <p className="text-3xl font-bold">{statusCounts['Pending'] || 0}</p>
-              </div>
-              <div className="bg-white dark:bg-gray-800 shadow rounded-xl p-4">
-                <h2 className="text-gray-600 dark:text-gray-300">In Progress</h2>
-                <p className="text-3xl font-bold">{statusCounts['In Progress'] || 0}</p>
-              </div>
-              <div className="bg-white dark:bg-gray-800 shadow rounded-xl p-4">
-                <h2 className="text-gray-600 dark:text-gray-300">Fixed</h2>
-                <p className="text-3xl font-bold">{statusCounts['Fixed'] || 0}</p>
-              </div>
+              {Object.keys(statusCounts).map((status) => (
+                <div key={status} className="bg-white dark:bg-gray-800 shadow rounded-xl p-4">
+                  <h2 className="text-gray-600 dark:text-gray-300">{status}</h2>
+                  <p className="text-3xl font-bold">{statusCounts[status]}</p>
+                </div>
+              ))}
             </div>
 
-            {/* Charts + Recent Reports */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            {/* Charts */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Pie Chart */}
-              <div className="bg-white dark:bg-gray-800 shadow rounded-xl p-6 flex justify-center items-center">
-                <ResponsiveContainer width="100%" height={250}>
+              <div className="bg-white dark:bg-gray-800 shadow rounded-xl p-6 flex flex-col items-center">
+                <h2 className="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-200">Report Status Distribution</h2>
+                <ResponsiveContainer width="100%" height={300}>
                   <PieChart>
                     <Pie
-                      data={chartData}
-                      dataKey="value"
-                      nameKey="name"
+                      data={pieChartData}
                       cx="50%"
                       cy="50%"
                       outerRadius={80}
                       fill="#8884d8"
-                      label
+                      dataKey="value"
+                      labelLine={false}
+                      label={renderLabel}
                     >
-                      {chartData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={statusColors[entry.name] || '#8884d8'} />
+                      {pieChartData.map((entry, index) => (
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={statusColors[entry.name] || '#ccc'}
+                        />
                       ))}
                     </Pie>
                     <Tooltip />
                   </PieChart>
                 </ResponsiveContainer>
+                <ul className="mt-4 space-y-1 text-sm text-gray-600 dark:text-gray-300">
+                  {pieChartData.map((entry, index) => (
+                    <li key={index} className="flex items-center space-x-2">
+                      <span
+                        className="w-3 h-3 rounded-full inline-block"
+                        style={{ backgroundColor: statusColors[entry.name] || '#ccc' }}
+                      ></span>
+                      <span>{entry.name}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
 
-              {/* Bar Chart */}
-              <div className="bg-white dark:bg-gray-800 shadow rounded-xl p-6 col-span-1 lg:col-span-2">
-                <ResponsiveContainer width="100%" height={250}>
-                  <BarChart data={chartData}>
+              {/* Bar Chart (by Category) */}
+              <div className="bg-white dark:bg-gray-800 shadow rounded-xl p-6">
+                <h2 className="text-lg font-semibold mb-2 text-gray-700 dark:text-gray-200">Reports by Category</h2>
+                <ResponsiveContainer width="100%" height={300}>
+                  <BarChart data={barChartData}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="name" stroke="#8884d8" />
+                    <XAxis dataKey="category" />
                     <YAxis allowDecimals={false} />
                     <Tooltip />
-                    <Bar dataKey="value" fill="#6366f1" />
+                    <Bar dataKey="count" fill="#3b82f6" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -150,8 +207,11 @@ const Dashboard = () => {
                   {reports
                     .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
                     .slice(0, 10)
-                    .map(report => (
-                      <li key={report.id} className="py-4 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition px-2">
+                    .map((report) => (
+                      <li
+                        key={report.id}
+                        className="py-4 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md transition px-2"
+                      >
                         <Link to={`/report/${report.id}`} className="block">
                           <p className="text-gray-800 dark:text-gray-200 font-medium">
                             {report.category} - {report.status}
